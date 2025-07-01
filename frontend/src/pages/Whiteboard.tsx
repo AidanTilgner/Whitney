@@ -1,11 +1,14 @@
 import { Excalidraw } from "@excalidraw/excalidraw";
-import { Box, LoadingOverlay, Text } from "@mantine/core";
+import { ActionIcon, Box, LoadingOverlay, Text } from "@mantine/core";
+import { IconArrowsMaximize, IconArrowsMinimize } from "@tabler/icons-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getWhiteboardData, saveWhiteboardData } from "../api/api";
 
 const Whiteboard = () => {
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
+  const navigate = useNavigate();
   // Using `any` to avoid type import issues with Excalidraw's API ref
   const excalidrawRef = useRef<any>(null);
   const debounceTimer = useRef<number | null>(null);
@@ -14,6 +17,23 @@ const Whiteboard = () => {
   const [initialData, setInitialData] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const isFullscreen =
+    new URLSearchParams(location.search).get("fullscreen") === "true";
+
+  const toggleFullscreen = useCallback(() => {
+    const searchParams = new URLSearchParams(location.search);
+    if (isFullscreen) {
+      searchParams.delete("fullscreen");
+    } else {
+      searchParams.set("fullscreen", "true");
+    }
+    // Use replace to avoid polluting browser history
+    navigate(
+      { pathname: location.pathname, search: searchParams.toString() },
+      { replace: true },
+    );
+  }, [isFullscreen, location.pathname, location.search, navigate]);
 
   useEffect(() => {
     if (!id) {
@@ -86,11 +106,24 @@ const Whiteboard = () => {
   }
 
   return (
-    <Box w="100%" h="90vh" pos="relative">
+    <Box w="100%" h={isFullscreen ? "100vh" : "90vh"} pos="relative">
       <LoadingOverlay
         visible={isLoading}
         overlayProps={{ radius: "sm", blur: 2 }}
       />
+      <ActionIcon
+        onClick={toggleFullscreen}
+        style={{ position: "absolute", top: 16, right: 16, zIndex: 2 }}
+        title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+        variant="default"
+        size="lg"
+      >
+        {isFullscreen ? (
+          <IconArrowsMinimize size="1.25rem" />
+        ) : (
+          <IconArrowsMaximize size="1.25rem" />
+        )}
+      </ActionIcon>
       {/* Render Excalidraw only after initial data is fetched to prevent flicker */}
       {!isLoading && initialData && (
         <Excalidraw

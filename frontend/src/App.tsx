@@ -16,6 +16,20 @@ function AppLayout() {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const location = useLocation();
+  const isFullscreen =
+    new URLSearchParams(location.search).get("fullscreen") === "true" &&
+    location.pathname.startsWith("/whiteboard/");
+
+  const mainContent = (
+    <Routes>
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/whiteboard/:id" element={<Whiteboard />} />
+    </Routes>
+  );
+
+  if (isFullscreen) {
+    return mainContent;
+  }
 
   return (
     <AppShell
@@ -79,12 +93,7 @@ function AppLayout() {
         </Text>
       </AppShell.Navbar>
 
-      <AppShell.Main>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/whiteboard/:id" element={<Whiteboard />} />
-        </Routes>
-      </AppShell.Main>
+      <AppShell.Main>{mainContent}</AppShell.Main>
     </AppShell>
   );
 }
