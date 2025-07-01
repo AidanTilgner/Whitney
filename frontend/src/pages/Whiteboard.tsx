@@ -1,5 +1,5 @@
 import { Excalidraw } from "@excalidraw/excalidraw";
-import { ActionIcon, Box, LoadingOverlay, Text } from "@mantine/core";
+import { ActionIcon, Box, Group, LoadingOverlay, Text } from "@mantine/core";
 import { IconArrowsMaximize, IconArrowsMinimize } from "@tabler/icons-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -106,28 +106,31 @@ const Whiteboard = () => {
   }
 
   return (
-    <Box w="100%" h={isFullscreen ? "100vh" : "90vh"} pos="relative">
+    <Box
+      w="100%"
+      h={isFullscreen ? "calc(100vh - 36px)" : "90vh"}
+      pos="relative"
+    >
       <LoadingOverlay
         visible={isLoading}
         overlayProps={{ radius: "sm", blur: 2 }}
       />
-      <ActionIcon
-        onClick={toggleFullscreen}
-        style={{ position: "absolute", top: 16, right: 16, zIndex: 2 }}
-        title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-        variant="default"
-        size="lg"
-      >
-        {isFullscreen ? (
-          <IconArrowsMinimize size="1.25rem" />
-        ) : (
-          <IconArrowsMaximize size="1.25rem" />
-        )}
-      </ActionIcon>
-      {/* Render Excalidraw only after initial data is fetched to prevent flicker */}
+      <Group h="36px" align="center">
+        <ActionIcon
+          onClick={toggleFullscreen}
+          title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+          variant="default"
+          size="xs"
+        >
+          {isFullscreen ? (
+            <IconArrowsMinimize size=".7rem" />
+          ) : (
+            <IconArrowsMaximize size=".7rem" />
+          )}
+        </ActionIcon>
+      </Group>
       {!isLoading && initialData && (
         <Excalidraw
-          // Use the excalidrawAPI prop to get the API instance, as `ref` is not supported
           excalidrawAPI={(api) => (excalidrawRef.current = api)}
           initialData={initialData}
           theme="dark"
