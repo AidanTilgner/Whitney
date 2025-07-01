@@ -1,3 +1,6 @@
+> [!warning] Disclaimer
+> This entire repository is vibe-coded, written by AI. It's a simple tool I just wanted to exist and spun into existence. So don't expect the highest quality!
+
 # Whitney
 
 Whitney is a lightweight, local-first, self-hosted whiteboarding application designed for fluid collaboration and AI-powered chat.
